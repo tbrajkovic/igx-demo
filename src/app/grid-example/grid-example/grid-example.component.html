@@ -1,5 +1,5 @@
 <div class="grid__wrapper">
-  <igx-grid #grid [batchEditing]="true" [data]="data" [primaryKey]="'ProductID'" width="100%" height="500px"
+  <igx-grid (cellEditExit)="cellEditDone($event)" #grid [batchEditing]="true" [data]="data" [primaryKey]="'ProductID'" width="100%" height="500px"
     [rowEditable]="true">
     <igx-column [editable]="false">
       <ng-template igxCell let-cell="cell" let-val>
@@ -12,8 +12,15 @@
       </ng-template>
       <ng-template igxCellEditor let-cell="cell" let-value>
         <igx-input-group #inputGroup [igxToggleAction]="dropDown" class="input-group">
-          <input #input class="input" type="text" igxInput [igxFocus]="true" [igxDropDownItemNavigation]="dropDown"
-            [igxAutocomplete]="dropDown" [(ngModel)]="cell.editValue" />
+          <input #input 
+          class="input" 
+          type="text" 
+          igxInput 
+          [igxFocus]="true" 
+          [igxDropDownItemNavigation]="dropDown"
+          [igxAutocomplete]="dropDown" 
+          [(ngModel)]="cell.editValue"
+           />
           <igx-suffix igxButton="icon" class="dropdownToggleButton" igxRipple>
             <igx-icon>arrow_drop{{ dropDown.collapsed ? '_down' : '_up' }}</igx-icon>
           </igx-suffix>
@@ -25,55 +32,23 @@
         </igx-drop-down>
       </ng-template>
     </igx-column>
-
     <igx-column header="Name" field="name"></igx-column>
-    <igx-column header="Brad" field="brand"></igx-column>
-    <igx-column header="Quantity" field="stockQty"></igx-column>
-    <igx-column header="Available" field="available"></igx-column>
-
+    <igx-column header="Brand" field="brand"></igx-column>
+    <igx-column header="Quantity" field="stockQty" dataType="number"></igx-column>
+    <igx-column header="Available" field="available" dataType="boolean"></igx-column>
     <igx-column header="Text" field="description.text"></igx-column>
-    <igx-column header="Price" field="description.price"></igx-column>
-    <igx-column header="Discount" field="description.discount"></igx-column>
-
-    <!-- <igx-column header="stockQty" field="stockQty">
-    <ng-template igxCell let-cell="cell">
-      {{ cell?.value?.city }}
-    </ng-template>
-    <ng-template igxCellEditor let-cell="cell">
-      <igx-simple-combo [igxFocus]="true" displayKey="city" [data]="addresses" (selectionChanging)="cell.editValue = $event.newSelection"></igx-simple-combo>
-    </ng-template>
-  </igx-column> -->
+    <igx-column header="Price" field="description.price" dataType="number"></igx-column>
+    <igx-column header="Discount" field="description.discount" dataType="number"></igx-column>
   </igx-grid>
 
 
   <div class="buttons-row">
     <button igxButton (click)="addRow()">Add Row</button>
     <div class="buttons-wrapper">
-      <button igxButton [disabled]="!grid.transactions.canUndo" (click)="undo()">Undo</button>
-      <button igxButton [disabled]="!grid.transactions.canRedo" (click)="redo()">Redo</button>
       <button igxButton [disabled]="grid.transactions.getAggregatedChanges(false).length < 1"
-        (click)="openCommitDialog()">Commit</button>
+        (click)="discard()">DISCARD CHANGES</button>
+        <button igxButton [disabled]="grid.transactions.getAggregatedChanges(false).length < 1"
+        (click)="commit()">SAVE CHANGES</button>
     </div>
   </div>
-  <igx-dialog #dialog title="Submit the following transactions?">
-    <igx-grid #dialogGrid [data]="transactionsData" [rowHeight]="64" [primaryKey]="'id'" width="600px" height="300px"
-      [emptyGridMessage]="'No available transactions'">
-      <igx-column field="id" header="ID" [dataType]="'string'" width="100px"></igx-column>
-      <igx-column field="type" header="Type" width="150px" [sortable]="true">
-        <ng-template igxCell let-cell="cell" let-val>
-          <span [class]="classFromType(val)">{{ typeFormatter(val) }}</span>
-        </ng-template>
-      </igx-column>
-      <igx-column field="newValue" header="Value" width="900px">
-        <ng-template igxCell let-cell="cell" let-val>
-          <span class="transaction-log">{{ stateFormatter(val) }}</span>
-        </ng-template>
-      </igx-column>
-    </igx-grid>
-    <div class="buttons-wrapper">
-      <button igxButton (click)="commit()">Commit</button>
-      <button igxButton (click)="discard()">Discard</button>
-      <button igxButton (click)="dialog.close()">Cancel</button>
-    </div>
-  </igx-dialog>
 </div>
